@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Garage Manager</title>
+<style>
+body{font-family:sans-serif;background:#f2f2f2;padding:10px}
+h2{text-align:center}
+input,button{width:100%;padding:12px;margin:5px 0;font-size:16px}
+button{background:#222;color:#fff;border:none;border-radius:5px}
+.job{padding:10px;margin:8px 0;border-radius:5px;color:#fff}
+.unpaid{background:#d32f2f}
+.paid{background:#2e7d32}
+.small{font-size:14px}
+.del{background:#000;margin-top:5px}
+.total{font-weight:bold;text-align:center;margin:10px}
+</style>
+</head>
+<body>
+
+<h2>🔧 Garage Manager</h2>
+
+<input id="date" type="date">
+<input id="name" placeholder="Customer Name">
+<input id="work" placeholder="Work (Oil, Brakes…)">
+<input id="car" placeholder="Car Model">
+<input id="price" type="number" placeholder="Price">
+<button onclick="addJob()">Add Job</button>
+
+<div class="total" id="total"></div>
+<div id="list"></div>
+
+<script>
+let jobs = JSON.parse(localStorage.jobs||"[]")
+
+function save(){localStorage.jobs=JSON.stringify(jobs);render()}
+
+function addJob(){
+jobs.push({
+date:date.value,
+name:name.value,
+work:work.value,
+car:car.value,
+price:+price.value||0,
+paid:false
+})
+save()
+}
+
+function toggle(i){jobs[i].paid=!jobs[i].paid;save()}
+function del(i){jobs.splice(i,1);save()}
+
+function render(){
+list.innerHTML=""
+let sum=0
+jobs.forEach((j,i)=>{
+if(j.paid) sum+=j.price
+list.innerHTML+=`
+<div class="job ${j.paid?'paid':'unpaid'}">
+<b>${j.name}</b> - ${j.work}<br>
+${j.car} | ${j.date}<br>
+💰 ${j.price} | ${j.paid?'PAID':'UNPAID'}<br>
+<button onclick="toggle(${i})">Mark Paid</button>
+<button class="del" onclick="del(${i})">Delete</button>
+</div>`
+})
+total.innerText="Total Earned: 💰 "+sum
+}
+render()
+</script>
+
+</body>
+</html>
